@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WiFi Monitor Setup</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="setup-container">
+    <div class="setup-card">
+      <div class="setup-header">
+        <h1><i class="icon-wifi"></i> WiFi Monitor Setup</h1>
+        <p>Connect to your WiFi network to start monitoring</p>
+      </div>
+
+      <div class="setup-content">
+        <div class="form-group">
+          <label for="networks">Available Networks</label>
+          <div class="select-wrapper">
+            <select id="networks" class="form-select">
+              <option>Scanning for networks...</option>
+            </select>
+            <button id="refresh" class="refresh-btn" title="Refresh Networks">🔄</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" class="form-input" placeholder="Enter WiFi password">
+        </div>
+
+        <div class="form-group">
+          <button id="connect" class="connect-btn">
+            <span class="btn-text">Connect to WiFi</span>
+            <span class="btn-spinner" style="display: none;">⏳</span>
+          </button>
+        </div>
+
+        <div class="connection-status" id="connection-status" style="display: none;">
+          <div class="status-message" id="status-message"></div>
+        </div>
+      </div>
+
+      <div class="setup-footer">
+        <p>After connecting, you'll be redirected to the monitoring dashboard</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let isConnecting = false;
+
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('connection-status');
+      const messageDiv = document.getElementById('status-message');
+      messageDiv.textContent = message;
+      messageDiv.className = `status-message ${type}`;
+      statusDiv.style.display = 'block';
+    }
+
+    function setConnecting(connecting) {
+      isConnecting = connecting;
+      const connectBtn = document.getElementById('connect');
+      const btnText = connectBtn.querySelector('.btn-text');
+      const btnSpinner = connectBtn.querySelector('.btn-spinner');
+
+      if (connecting) {
+        btnText.style.display = 'none';
+        btnSpinner.style.display = 'inline';
+        connectBtn.disabled = true;
+        connectBtn.classList.add('connecting');
+      } else {
+        btnText.style.display = 'inline';
+        btnSpinner.style.display = 'none';
+        connectBtn.disabled = false;
+        connectBtn.classList.remove('connecting');
+      }
+    }
+
+    function loadNetworks() {
+      showStatus('Scanning for WiFi networks...', 'info');
+      fetch('/scan')
+        .then(r => r.json())
+        .then(networks => {
+          const select = document.getElementById('networks');
+          if (networks.length === 0) {
+            select.innerHTML = '<option>No networks found</option>';
+            showStatus('No WiFi networks found', 'warning');
+          } else {
+            select.innerHTML = networks.map(n =>
+              `<option value="${n.ssid}">${n.ssid} (${n.rssi}dBm) ${n.encryption}</option>`
+            ).join('');
+            showStatus(`Found ${networks.length} networks`, 'success');
+          }
+        })
+        .catch(err => {
+          console.error('Scan failed:', err);
+          showStatus('Failed to scan networks', 'error');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadNetworks();
+
+      document.getElementById('refresh').addEventListener('click', loadNetworks);
+
+      document.getElementById('connect').addEventListener('click', () => {
+        if (isConnecting) return;
+
+        const ssid = document.getElementById('networks').value;
+        const password = document.getElementById('password').value;
+
+        if (!ssid || ssid === 'Scanning for networks...' || ssid === 'No networks found') {
+          showStatus('Please select a valid network', 'error');
+          return;
+        }
+
+        setConnecting(true);
+        showStatus('Connecting to WiFi...', 'info');
+
+        fetch('/connect', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+          body: `ssid=${encodeURIComponent(ssid)}&password=${encodeURIComponent(password)}`
+        })
+        .then(response => response.text())
+        .then(result => {
+          if (result.includes('success')) {
+            showStatus('Connected successfully! Redirecting...', 'success');
+            setTimeout(() => {
+              window.location.href = '/dashboard.html';
+            }, 2000);
+          } else {
+            showStatus('Connection failed: ' + result, 'error');
+            setConnecting(false);
+          }
+        })
+        .catch(err => {
+          console.error('Connection failed:', err);
+          showStatus('Connection failed. Please try again.', 'error');
+          setConnecting(false);
+        });
+      });
+    });
+  </script>
+</body>
+</html>

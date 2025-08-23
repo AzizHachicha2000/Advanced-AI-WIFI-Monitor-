@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI WiFi Monitor Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="apexcharts.min.js"></script>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <header class="dashboard-header">
+      <div class="header-content">
+        <h1><i class="icon-wifi"></i> AI WiFi Monitor</h1>
+        <div class="connection-status" id="connection-status">
+          <span class="status-dot" id="status-dot"></span>
+          <span id="status-text">Connecting...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Real-time Status Cards -->
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="card-header">
+          <h3>Signal Strength</h3>
+          <span class="card-icon">📶</span>
+        </div>
+        <div class="card-value" id="rssi-value">-</div>
+        <div class="card-unit">dBm</div>
+        <div class="card-status" id="rssi-status"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-header">
+          <h3>Noise Floor</h3>
+          <span class="card-icon">🔇</span>
+        </div>
+        <div class="card-value" id="noise-value">-</div>
+        <div class="card-unit">dBm</div>
+        <div class="card-status" id="noise-status"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-header">
+          <h3>Signal Quality</h3>
+          <span class="card-icon">📊</span>
+        </div>
+        <div class="card-value" id="snr-value">-</div>
+        <div class="card-unit">dB SNR</div>
+        <div class="card-status" id="snr-status"></div>
+      </div>
+
+      <div class="status-card">
+        <div class="card-header">
+          <h3>Channel Load</h3>
+          <span class="card-icon">🌐</span>
+        </div>
+        <div class="card-value" id="channel-value">-</div>
+        <div class="card-unit">%</div>
+        <div class="card-status" id="channel-status"></div>
+      </div>
+    </div>
+
+    <!-- AI Stability Card - Center Bottom (Most Important) -->
+    <div class="ai-stability-section">
+      <div class="status-card ai-card ai-main">
+        <div class="card-header">
+          <h3>🤖 AI WiFi Stability Prediction</h3>
+          <span class="card-icon">🎯</span>
+        </div>
+        <div class="ai-content">
+          <div class="card-value" id="stability-value">-</div>
+          <div class="card-unit">% Stability</div>
+          <div class="stability-bar">
+            <div class="stability-fill" id="stability-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Time Range Controls -->
+    <div class="controls-section">
+      <h3>Time Range</h3>
+      <div class="time-controls">
+        <button class="time-btn active" data-days="0">Today</button>
+        <button class="time-btn" data-days="1">Last 1 Day</button>
+        <button class="time-btn" data-days="2">Last 2 Days</button>
+        <button class="time-btn" data-days="3">Last 3 Days</button>
+        <button class="time-btn" data-days="4">Last 4 Days</button>
+        <button class="time-btn" data-days="5">Last 5 Days</button>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="charts-section">
+      <div class="chart-container">
+        <h3>WiFi Performance Metrics</h3>
+        <div id="chart"></div>
+      </div>
+    </div>
+
+    <!-- Enhanced AI Alerts Section -->
+    <div class="alerts-section" id="alerts-section">
+      <h3>🤖 AI Problem Diagnosis & Solutions</h3>
+
+      <!-- Current AI Alert with Diagnosis -->
+      <div class="ai-alert-card" id="current-ai-alert">
+        <div class="alert-header">
+          <span class="alert-icon" id="alert-icon">🔍</span>
+          <span class="alert-title" id="alert-title">Analyzing...</span>
+          <span class="alert-confidence" id="alert-confidence">-</span>
+        </div>
+        <div class="alert-message" id="alert-message">AI is analyzing your WiFi connection...</div>
+        <div class="alert-solution" id="alert-solution">
+          <!-- AI-suggested solutions will appear here -->
+        </div>
+      </div>
+
+      <!-- Traditional Alerts Container -->
+      <div class="alerts-container" id="alerts-container">
+        <!-- Additional alerts will be populated by JavaScript -->
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
