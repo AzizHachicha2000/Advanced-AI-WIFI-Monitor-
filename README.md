@@ -133,4 +133,6 @@ The project is ready for TensorFlow Lite integration. The trained model is avail
 - PlatformIO
 - Python 3.x with TensorFlow, pandas, scikit-learn
 - ESP32 libraries: WiFiManager, ArduinoJson, LittleFS
+##
 Check "Report.pdf" for more details.
+
